@@ -22,9 +22,9 @@
             </div>
             <div class="flex" style="flex-direction: column">
               <div style="flex: 1">
-                <h4 style="color:orangered;">学习进度：40%</h4>
-                <h4 style="color:#06b0f9;">复习进度：20%</h4>
-                <h4 style="color:#20e109;">刷题数量：3721 题</h4>
+                <h4 style="color: orangered">学习进度：40%</h4>
+                <h4 style="color: #06b0f9">复习进度：20%</h4>
+                <h4 style="color: #20e109">刷题数量：3721 题</h4>
               </div>
               <div class="experience-wrap">
                 <img class="experience-bar" :src="bar" />
@@ -35,14 +35,30 @@
           </div>
 
           <div>
-            计划项
-            <p v-for="(item, index) in listItems" :key="index">
-              {{ item.title }}
+            <p>
+              计划项
+              <el-button type="primary" @click="onAdd">添加计划项</el-button>
             </p>
+            <div
+              class="plan-item border-bottom"
+              v-for="(item, index) in planItems"
+              :key="index"
+            >
+              <p v-text="item.title"></p>
+              <el-progress :percentage="50"></el-progress>
+            </div>
+            <el-pagination
+              background
+              layout="total, prev, pager, next"
+              :total="planTotal"
+              @current-change="onPage"
+            >
+            </el-pagination>
           </div>
         </el-card>
       </el-col>
     </el-row>
+    <add-plan-item :plan-id="plan.id" :visible="layerIndex == 1" />
   </div>
 </template>
 <style scoped lang="scss">
@@ -91,44 +107,79 @@
       }
     }
   }
+  .plan-item {
+    padding: 10px 0;
+    p {
+      margin-top: 0;
+    }
+  }
 }
 </style>
     
 <script>
-import { getPlan } from "@/apis/plan";
+import { getPlan, getPlanItems } from "@/apis/plan";
 import { LAYOUTS } from "@/constants";
 import bar from "@/assets/bar.svg";
+import addPlanItem from "./components/add-plan-item.vue";
 export default {
   name: "plan-detail",
-  components: {},
+  components: { addPlanItem },
   data() {
     return {
       bar,
       loading: false,
       showAnswer: false,
+      layerIndex: 0,
       layout: LAYOUTS.LAYOUT_LIST,
       rating: 0,
       plan: {
         planTitle: "",
       },
-      listItems: [
-        { title: "Java数组" },
-        { title: "Java中的ArrayList" },
-        { title: "Java序列化和反序列化" },
-      ],
+      planItems: [],
+      planTotal: 0,
+      currentPage: 1,
     };
+  },
+  comments: {
+    addPlanItem,
   },
   methods: {
     toggleShowAnswer() {
       this.showAnswer = !this.showAnswer;
     },
+    onLayerChange(index) {
+      this.layerIndex = index;
+      this.onPage();
+    },
+    onAdd() {
+      this.layerIndex = 1;
+    },
+    onPage(page) {
+      this.currentPage = page;
+      this.getItems();
+    },
+    getItems() {
+      const _this = this;
+      getPlanItems({ planId: _this.id, pageNum: 1, pageSize: 10 })
+        .then((res) => {
+          const {
+            data: { list, total },
+          } = { data: {}, ...res };
+          _this.planItems = [...(list || [])];
+          _this.planTotal = total || 0;
+        })
+        .catch((err) => {
+          console.log(err, "bbbbbbbbbbbbbbbbbbbbbbb");
+        });
+    },
     fetchData() {
       const _this = this;
       getPlan(this.id)
         .then((res) => {
-          console.log(res, "111111111111");
           const { data } = { ...res };
           _this.plan = { ...data };
+          _this.currentPage = 1;
+          _this.getItems();
         })
         .catch((err) => {
           console.log(err, "2222222222222");

@@ -24,6 +24,10 @@ body {
     box-sizing: border-box;
 }
 
+.border-bottom {
+    border-bottom: 1px solid #eee;
+}
+
 #app {
     min-width: 720px;
     font-family: Avenir, Helvetica, Arial, sans-serif;
