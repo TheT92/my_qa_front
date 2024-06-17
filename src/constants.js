@@ -39,3 +39,19 @@ export const EXCLUDE_ROUTERS = [
     "/api/account/login",
     "/api/question/questionsPage"
 ]
+
+export const HEADER_LINKS = [
+    { name: "Home", link: "/" },
+    { name: "Problems", link: "/list" },
+    { name: "Learn English", link: "/learnEnglish" },
+    { name: "Study Plan", link: "/studyPlan" },
+    { name: "User Center", link: "/user" },
+    { name: "Login", link: "/login" },
+]
+
+export const WORD_TYPES = [
+    { label: "名词 .noun", value: 1 },
+    { label: "动词 .verb", value: 2 },
+    { label: "形容词 .adj", value: 3 },
+    { label: "副词 .adv", value: 4 }
+]

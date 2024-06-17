@@ -29,7 +29,12 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="标准答案" prop="rightAnswer">
-            <el-input type="textarea" v-model="formData.rightAnswer"></el-input>
+            <el-input
+              type="textarea"
+              :rows="4"
+              :autosize="{ minRows: 4, maxRows: 10 }"
+              v-model="formData.rightAnswer"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button
@@ -57,7 +62,7 @@ export default {
       loading: false,
       layout: LAYOUTS.LAYOUT_FORM,
       formData: {
-        id: '',
+        id: "",
         questionTitle: "",
         category: "",
         questionContent: "",
@@ -87,7 +92,7 @@ export default {
       _this.$refs[formName].validate((valid) => {
         if (valid) {
           _this.loading = true;
-          editQuestion({ id: this.id, ..._this.formData, delFlag: 0 })
+          editQuestion({ id: this.id, ..._this.formData })
             .then((res) => {
               const { data = "" } = { ...res };
               if (data == "success") {
@@ -110,23 +115,26 @@ export default {
     },
     fetchData() {
       const _this = this;
-      getQuestion(this.id).then(res => {
-        console.log(res, '111111111111')
-        const { data } = { ...res };
-        _this.formData = { ...data };
-        _this.resetForm('formData');
-      }).catch(err => {
-        console.log(err, '2222222222222')
-      }).finally(() => {
-        console.log('3333333333333333333')
-      })
-    }
+      getQuestion(this.id)
+        .then((res) => {
+          console.log(res, "111111111111");
+          const { data } = { ...res };
+          _this.formData = { ...data };
+          _this.resetForm("formData");
+        })
+        .catch((err) => {
+          console.log(err, "2222222222222");
+        })
+        .finally(() => {
+          console.log("3333333333333333333");
+        });
+    },
   },
   mounted() {
-    const {id} = this.$route.params;
+    const { id } = this.$route.params;
     this.id = id;
     !!id && this.fetchData();
-  }
+  },
 };
 </script>
     

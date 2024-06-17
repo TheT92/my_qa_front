@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login page-container">
     <el-row :gutter="10">
       <el-col
         :xs="layout.xs"
@@ -8,7 +8,7 @@
         :lg="layout.lg"
         :xl="layout.xl"
       >
-        <el-card class="box-card">
+        <el-card class="box-card mt-4">
           <div slot="header" class="clearfix">
             <span>登录</span>
           </div>

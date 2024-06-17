@@ -94,7 +94,7 @@ export default {
       _this.$refs[formName].validate((valid) => {
         if (valid) {
           _this.loading = true;
-          addPlan({ ..._this.formData, delFlag: 0 })
+          addPlan({ ..._this.formData })
             .then((res) => {
               const { data = "" } = { ...res };
               if (data == "success") {

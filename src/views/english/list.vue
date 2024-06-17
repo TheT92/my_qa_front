@@ -1,13 +1,3 @@
-<!--
- * @name: 
- * @param: 
- * @return: 
--->
-<!--
- * @name: 
- * @param: 
- * @return: 
--->
 <template>
   <div class="question-list page-container">
     <el-input
@@ -16,9 +6,6 @@
       v-model="query"
       @keydown.enter.native="fetchData"
     >
-      <el-button slot="prepend" type="primary" @click="toAdd"
-        >Add Question</el-button
-      >
       <el-button
         type="primary"
         slot="append"
@@ -26,7 +13,7 @@
         @click="fetchData"
       ></el-button>
     </el-input>
-
+    <el-button type="primary" @click="toAdd">Add Word</el-button>
     <el-card class="box-card mt-2" shadow="never">
       <el-table
         v-loading="loading"
@@ -42,21 +29,17 @@
           width="100"
         ></el-table-column>
         <el-table-column
-          label="标题"
+          label="单词"
           show-overflow-tooltip
           tooltip-effect="light"
         >
           <template slot-scope="scope">
             <span class="text-link f14" @click="toDetail(scope.row)">{{
-              scope.row.questionTitle
+              scope.row.word
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="category"
-          label="类别"
-          width="180"
-        ></el-table-column>
+        <el-table-column prop="type" label="类别" width="180"></el-table-column>
 
         <el-table-column fixed="right" label="操作" width="100">
           <template slot-scope="scope">
@@ -64,7 +47,7 @@
               >编辑</el-button
             >
             <el-popconfirm
-              title="确定删除该问题吗？"
+              title="确定删除该单词吗？"
               @confirm="onDel(scope.row)"
             >
               <el-button slot="reference" type="text">删除</el-button>
@@ -85,7 +68,7 @@
 </template>
   
   <script>
-import * as questionApi from "@/apis/question";
+import * as wordApi from "@/apis/word";
 import { LAYOUTS, PAGE_SIZE } from "@/constants";
 
 export default {
@@ -106,7 +89,7 @@ export default {
       return index + 1;
     },
     toAdd() {
-      this.$router.push("/add");
+      this.$router.push(`/addWord`);
     },
     toDetail(data) {
       console.log(data);
@@ -123,8 +106,8 @@ export default {
       if ({ ...data }.id) {
         const _this = this;
         _this.loading = true;
-        questionApi
-          .deleteQuestion(data.id)
+        wordApi
+          .deleteWord(data.id)
           .then((res) => {
             const { data = "" } = { ...res };
             if (data == "success") {
@@ -149,8 +132,8 @@ export default {
     fetchData() {
       this.loading = true;
       const _this = this;
-      questionApi
-        .getQuestionsPage({
+      wordApi
+        .getWordPage({
           query: _this.query,
           pageNum: this.currentPage,
           pageSize: PAGE_SIZE.DEFAULT,

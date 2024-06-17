@@ -1,20 +1,10 @@
 <template>
-  <div class="user-center">
-    <el-row>
-      <el-col
-        :xs="layout.xs"
-        :sm="layout.sm"
-        :md="layout.md"
-        :lg="layout.lg"
-        :xl="layout.xl"
-      >
-        <h4>用户中心</h4>
-        <el-card class="box-card" shadow="never">
-          <p>用户名：</p>
-          <p>数据：</p>
-        </el-card>
-      </el-col>
-    </el-row>
+  <div class="user-center page-container">
+    <h4 class="mt-4">用户中心</h4>
+    <el-card class="box-card" shadow="never">
+      <p>用户名：</p>
+      <p>数据：</p>
+    </el-card>
   </div>
 </template>
   
@@ -74,7 +64,7 @@ export default {
     fetchData() {
       this.loading = true;
       // const _this = this;
-    }
+    },
   },
   mounted() {
     this.fetchData();

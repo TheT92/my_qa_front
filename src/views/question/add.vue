@@ -113,7 +113,7 @@ export default {
       _this.$refs[formName].validate((valid) => {
         if (valid) {
           _this.loading = true;
-          addQuestion({ ..._this.formData, delFlag: 0 })
+          addQuestion({ ..._this.formData })
             .then((res) => {
               const { data = "" } = { ...res };
               if (data == "success") {

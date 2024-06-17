@@ -78,7 +78,7 @@ export default {
       _this.$refs[formName].validate((valid) => {
         if (valid) {
           _this.loading = true;
-          editPlan({ id: this.id, ..._this.formData, delFlag: 0 })
+          editPlan({ id: this.id, ..._this.formData })
             .then((res) => {
               const { data = "" } = { ...res };
               if (data == "success") {
