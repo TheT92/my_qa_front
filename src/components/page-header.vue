@@ -2,14 +2,17 @@
   <div
     class="page-header full-width d-flex justify-content-between align-items-center pl-4 pr-4"
   >
-    <span class="text-white fs-3">T<span style="color: red" class="fs-3 fw-7">!</span>an</span>
+    <span class="text-white fs-3"
+      >T<span style="color: red" class="fs-3 fw-7">!</span>an</span
+    >
     <ul class="list-style-none" id="pc-links">
       <li
-        v-for="(item, index) in HEADER_LINKS"
+        v-for="(item, index) in calHeader"
         :key="index"
         class="d-inline-block"
       >
         <router-link
+          :exact="index == 0"
           :to="item.link"
           class="text-decoration-none text-white p-2"
           >{{ item.name }}</router-link
@@ -32,21 +35,40 @@
 </template>
   
 <script>
-import { HEADER_LINKS } from "@/constants";
+import { mapState, mapActions } from "vuex";
+import {
+  HEADER_LINKS,
+  LOGIN_HEADER_LINKS,
+  LOGOUT_HEADER_LINKS,
+} from "@/constants";
 export default {
   name: "PageHeader",
   data() {
     return {
-      HEADER_LINKS,
       activeIndex: "0",
     };
   },
+  computed: {
+    ...mapState("account", ["userInfo"]),
+    calHeader() {
+      return [
+        ...HEADER_LINKS,
+        ...(this.userInfo.id ? LOGIN_HEADER_LINKS : LOGOUT_HEADER_LINKS),
+      ];
+    },
+  },
   methods: {
+    ...mapActions("account", ["getUserInfo"]),
     handleSelect(key) {
       if (key == this.activeIndex) return;
       this.activeIndex = key;
-      this.$router.push(HEADER_LINKS[key].link);
+      this.$router.push(this.calHeader[key].link);
     },
+  },
+  mounted() {
+    if (localStorage.getItem("token")) {
+      this.getUserInfo();
+    }
   },
 };
 </script>

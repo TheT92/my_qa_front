@@ -8,8 +8,8 @@ const intercept = () => {
         const { url } = { ...config };
         // 判断是否存在token,如果存在将每个页面header添加token
         if (!EXCLUDE_ROUTERS.includes(url)) {
-            if (sessionStorage.getItem("token")) {
-                config.headers.token = sessionStorage.getItem("token");
+            if (localStorage.getItem("token")) {
+                config.headers.token = localStorage.getItem("token");
             } else {
                 router.push('/login')
             }
@@ -21,16 +21,18 @@ const intercept = () => {
 
     // 添加响应拦截器
     axios.interceptors.response.use(function (response) {
-        return response;
+        return [null, response.data];
+        // return response;
     }, function (error) {
         const { response: { status = 0 } } = { response: {}, ...error };
         switch (Number(status)) {
             case STATUS_CODES.UNAUTHORIZED:
-                sessionStorage.setItem('token', '');
+                localStorage.setItem('token', '');
                 router.push('/login');
                 break;
             default:
-                return Promise.reject(error);
+                // return Promise.reject(error);
+                return Promise.resolve([error, null]);
         }
     });
 }

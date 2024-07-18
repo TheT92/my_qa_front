@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home page-container">
     <el-row :gutter="10">
       <el-col
         :xs="layout.xs"
@@ -17,14 +17,17 @@
           class="demo-formData"
         >
           <el-form-item label="标题" prop="questionTitle">
-            <el-input v-model="formData.questionTitle"></el-input>
+            <el-input class="fs-1" v-model="formData.questionTitle"></el-input>
           </el-form-item>
           <el-form-item label="类别" prop="category">
-            <el-input v-model="formData.category"></el-input>
+            <el-input class="fs-1" v-model="formData.category"></el-input>
           </el-form-item>
           <el-form-item label="问题详情" prop="questionContent">
             <el-input
               type="textarea"
+              class="fs-1"
+              :rows="4"
+              :autosize="{ minRows: 4, maxRows: 10 }"
               v-model="formData.questionContent"
             ></el-input>
           </el-form-item>
@@ -32,6 +35,7 @@
             <el-input
               type="textarea"
               :rows="4"
+              class="fs-1"
               :autosize="{ minRows: 4, maxRows: 10 }"
               v-model="formData.rightAnswer"
             ></el-input>
@@ -52,6 +56,7 @@
 </template>
     
     <script>
+import { Loading } from "element-ui";
 import { editQuestion, getQuestion } from "@/apis/question";
 import { LAYOUTS } from "@/constants";
 export default {
@@ -89,45 +94,40 @@ export default {
   methods: {
     submitForm(formName) {
       const _this = this;
-      _this.$refs[formName].validate((valid) => {
+      _this.$refs[formName].validate(async (valid) => {
         if (valid) {
           _this.loading = true;
-          editQuestion({ id: this.id, ..._this.formData })
-            .then((res) => {
-              const { data = "" } = { ...res };
-              if (data == "success") {
-                _this.msgSuccess("修改成功！");
-                _this.$router.replace("/list");
-              }
-            })
-            .catch((err) => {
-              _this.msgError("修改失败！");
-              console.log(err, "xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            })
-            .finally(() => {
-              _this.loading = false;
-            });
+          const [err, res] = await editQuestion({
+            id: this.id,
+            ..._this.formData,
+          });
+          _this.loading = false;
+          if (!err) {
+            if (res == "success") {
+              _this.msgSuccess("修改成功！");
+              _this.$router.replace("/list");
+            }
+          } else {
+            _this.msgError("修改失败！");
+          }
         }
       });
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-    fetchData() {
+    async fetchData() {
       const _this = this;
-      getQuestion(this.id)
-        .then((res) => {
-          console.log(res, "111111111111");
-          const { data } = { ...res };
-          _this.formData = { ...data };
-          _this.resetForm("formData");
-        })
-        .catch((err) => {
-          console.log(err, "2222222222222");
-        })
-        .finally(() => {
-          console.log("3333333333333333333");
-        });
+      let loadingInstance = Loading.service({ fullscreen: true });
+      const [err, res] = await getQuestion(_this.id);
+      _this.$nextTick(() => {
+        // 以服务的方式调用的 Loading 需要异步关闭
+        loadingInstance.close();
+      });
+      if (!err) {
+        const { question } = { ...res };
+        _this.formData = { ...question };
+      }
     },
   },
   mounted() {

@@ -43,6 +43,7 @@
 </template>
       
 <script>
+import { mapActions } from 'vuex';
 import { login } from '@/apis/account';
 export default {
   name: "login-page",
@@ -71,21 +72,21 @@ export default {
     };
   },
   methods: {
+    ...mapActions("account", ["getUserInfo"]),
     submitForm(formName) {
       const _this = this;
-      _this.$refs[formName].validate((valid) => {
+      _this.$refs[formName].validate(async (valid) => {
         if (valid) {
           _this.loading = true;
-          login(_this.formData).then(res => {
-            const { data = '' } = {...res};
-            sessionStorage.setItem('token', data);
+          const [err, res] = await login(_this.formData);
+          _this.loading = false;
+          if(!err) {
+            localStorage.setItem('token', res);
+            _this.getUserInfo();
             _this.$router.replace("/");
-          }).catch(err => {
-            console.log(err, 'xxxxxxxxxxxxxxxxxxxxxxx');
+          } else {
             this.msgError("登录失败~");
-          }).finally(() => {
-            _this.loading = false;
-          })
+          }
         }
       });
     },

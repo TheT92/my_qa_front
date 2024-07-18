@@ -1,5 +1,5 @@
 <template>
-  <div class="add-word page-container">
+  <div class="edit-word page-container">
     <el-row :gutter="10">
       <el-col
         :xs="layout.xs"
@@ -10,7 +10,7 @@
       >
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>添加单词</span>
+            <span>编辑单词</span>
           </div>
           <el-form
             :model="formData"
@@ -99,12 +99,14 @@
 }
 </style>
 <script>
+import { Loading } from "element-ui";
 import { LAYOUTS, WORD_TYPES } from "@/constants";
-import { addword } from "@/apis/word";
+import { getword, editword } from "@/apis/word";
 export default {
-  name: "add-word",
+  name: "edit-word",
   data() {
     return {
+      id: '',
       layout: LAYOUTS.LAYOUT_FORM,
       wordTypes: WORD_TYPES,
       formData: {
@@ -150,17 +152,17 @@ export default {
       _this.$refs[formName].validate(async (valid) => {
         if (valid) {
           _this.loading = true;
-          const [err, res] = await addword({ ..._this.formData });
+          const [err, res] = await editword({ ..._this.formData });
           _this.loading = false;
           if(!err) {
-              if (res == "success") {
-                _this.msgSuccess("创建成功！");
-                _this.$router.replace("/learnEnglish");
-              } else {
-                _this.msgError("创建失败！");
-              }
-          } else {
-            _this.msgError("创建失败！");
+            if (res == "success") {
+              _this.msgSuccess("修改成功！");
+              _this.$router.replace("/learnEnglish");
+            } else {
+              _this.msgError("修改失败！");
+            }
+          } else{
+            _this.msgError("修改失败！");
           }
         }
       });
@@ -168,6 +170,23 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+    async fetchData() {
+      const _this = this;
+      let loadingInstance = Loading.service({ fullscreen: true });
+      const [err, res] = await getword(_this.id);
+      _this.$nextTick(() => {
+        // 以服务的方式调用的 Loading 需要异步关闭
+        loadingInstance.close();
+      });
+      if (!err) {
+        _this.formData = { ...res };
+      }
+    },
+  },
+  mounted() {
+    const { id } = this.$route.params;
+    this.id = id;
+    !!id && this.fetchData();
   },
 };
 </script>

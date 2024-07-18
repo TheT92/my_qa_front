@@ -11,6 +11,7 @@ import mixin from '@/mixins/global';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import intercept from './utils/interceptor';
+import './style/font.css'
 
 intercept();
 Vue.config.productionTip = false

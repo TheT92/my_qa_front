@@ -1,5 +1,5 @@
 <template>
-  <div class="add-question">
+  <div class="add-question page-container">
     <el-row :gutter="10">
       <el-col
         :xs="layout.xs"
@@ -20,15 +20,16 @@
             class="add-form"
           >
             <el-form-item label="标题" prop="questionTitle">
-              <el-input v-model="formData.questionTitle"></el-input>
+              <el-input class="fs-1" v-model="formData.questionTitle"></el-input>
             </el-form-item>
             <el-form-item label="类别" prop="category">
-              <el-input v-model="formData.category"></el-input>
+              <el-input class="fs-1" v-model="formData.category"></el-input>
             </el-form-item>
             <el-form-item label="问题详情" prop="questionContent">
               <el-input
                 type="textarea"
                 :rows="4"
+                class="fs-1"
                 :autosize="{minRows: 4, maxRows: 10}"
                 v-model="formData.questionContent"
               ></el-input>
@@ -37,6 +38,7 @@
               <el-input
                 type="textarea"
                 :rows="4"
+                class="fs-1"
                 :autosize="{minRows: 4, maxRows: 10}"
                 v-model="formData.rightAnswer"
               ></el-input>
@@ -57,20 +59,6 @@
   </div>
 </template>
 <style scoped lang="scss">
-.add-question {
-  font-family: simHei;
-}
-::v-deep.el-input {
-  * {
-    font-size: 18px;
-  }
-}
-::v-deep.el-textarea {
-  * {
-    font-size: 18px;
-    font-family: simHei;
-  }
-}
 </style>
   
   <script>
@@ -110,24 +98,19 @@ export default {
   methods: {
     submitForm(formName) {
       const _this = this;
-      _this.$refs[formName].validate((valid) => {
+      _this.$refs[formName].validate(async (valid) => {
         if (valid) {
           _this.loading = true;
-          addQuestion({ ..._this.formData })
-            .then((res) => {
-              const { data = "" } = { ...res };
-              if (data == "success") {
+          const [err, res] = await addQuestion({ ..._this.formData });
+          _this.loading = false;
+          if(!err) {
+              if (res == "success") {
                 _this.msgSuccess("创建成功！");
                 _this.$router.replace("/list");
               }
-            })
-            .catch((err) => {
-              _this.msgError("创建失败！");
-              console.log(err, "xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-            })
-            .finally(() => {
-              _this.loading = false;
-            });
+          } else {
+            _this.msgError("创建失败！");
+          }
         }
       });
     },

@@ -17,6 +17,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err);
+}
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -59,6 +64,11 @@ const routes = [
     path: '/addWord',
     name: 'add-word',
     component: () => import('../views/english/add.vue')
+  },
+  {
+    path: '/editWord/:id',
+    name: 'edit-word',
+    component: () => import('../views/english/edit.vue')
   },
   {
     path: '/studyPlan',

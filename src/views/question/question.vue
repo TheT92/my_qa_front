@@ -1,5 +1,5 @@
 <template>
-  <div class="question">
+  <div class="question page-container">
     <el-row>
       <el-col
         :xs="layout.xs"
@@ -8,6 +8,20 @@
         :lg="layout.lg"
         :xl="layout.xl"
       >
+        <p>
+          <el-button
+            :disabled="prev == null || prev == ''"
+            type="primary"
+            @click="toggleProblem(prev)"
+            >上一题</el-button
+          >
+          <el-button
+            :disabled="next == null || next == ''"
+            type="primary"
+            @click="toggleProblem(next)"
+            >下一题</el-button
+          >
+        </p>
         <p>No: {{ question.id }}</p>
         <p class="flex">
           <span class="inline-block text-right w-120">标题：</span>
@@ -62,6 +76,7 @@
 </template>
     
 <script>
+import { Loading } from "element-ui";
 import { getQuestion, submitAnswer } from "@/apis/question";
 import { LAYOUTS } from "@/constants";
 export default {
@@ -73,6 +88,8 @@ export default {
       showAnswer: false,
       layout: LAYOUTS.LAYOUT_LIST,
       rating: 0,
+      next: null,
+      prev: null,
       question: {
         questionTitle: "",
       },
@@ -101,26 +118,36 @@ export default {
           console.log("3333333333333333333");
         });
     },
-    fetchData() {
+    toggleProblem(id) {
+      this.$router.push(`/question/${id}`);
+    },
+    async fetchData() {
       const _this = this;
-      getQuestion(this.id)
-        .then((res) => {
-          console.log(res, "111111111111");
-          const { data } = { ...res };
-          _this.question = { ...data };
-        })
-        .catch((err) => {
-          console.log(err, "2222222222222");
-        })
-        .finally(() => {
-          console.log("3333333333333333333");
-        });
+      let loadingInstance = Loading.service({ fullscreen: true });
+      const [err, res] = await getQuestion(_this.id);
+      _this.$nextTick(() => {
+        // 以服务的方式调用的 Loading 需要异步关闭
+        loadingInstance.close();
+      });
+      if (!err) {
+        
+        const { question, next, prev } = { ...res };
+        _this.question = { ...question };
+        _this.next = next;
+        _this.prev = prev;
+      }
     },
   },
   mounted() {
     const { id } = this.$route.params;
     this.id = id;
     !!id && this.fetchData();
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params;
+    this.id = id;
+    !!id && this.fetchData();
+    next();
   },
 };
 </script>

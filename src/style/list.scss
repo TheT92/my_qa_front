@@ -1,0 +1,34 @@
+.question-list {
+    .tag {
+        display: inline-block;
+        margin-left: 0.5rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #1992ff3d;
+        transition: all linear .3s;
+
+        &:hover {
+            color: #fff;
+            background-color: #1994ffb7;
+        }
+
+        &.active {
+            color: #fff;
+            background-color: #1992ff;
+        }
+
+        &-expand {
+            color: #1992ff;
+            background-color: #fff;
+            border-radius: 100px;
+            box-shadow: 0 0 0px 2px #1992ff inset;
+            &:hover {
+                color: #fff;
+                background-color: #1992ff;
+            }
+        }
+    }
+}

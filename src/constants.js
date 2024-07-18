@@ -36,16 +36,20 @@ export const LAYOUTS = {
 }
 
 export const EXCLUDE_ROUTERS = [
-    "/api/account/login",
-    "/api/question/questionsPage"
+    "/api/account/login"
 ]
 
 export const HEADER_LINKS = [
     { name: "Home", link: "/" },
     { name: "Problems", link: "/list" },
     { name: "Learn English", link: "/learnEnglish" },
-    { name: "Study Plan", link: "/studyPlan" },
+]
+
+export const LOGIN_HEADER_LINKS = [
     { name: "User Center", link: "/user" },
+]
+
+export const LOGOUT_HEADER_LINKS = [
     { name: "Login", link: "/login" },
 ]
 
@@ -54,4 +58,20 @@ export const WORD_TYPES = [
     { label: "动词 .verb", value: 2 },
     { label: "形容词 .adj", value: 3 },
     { label: "副词 .adv", value: 4 }
+]
+
+export const QUESTION_TAGS = [
+    'java',
+    'java8',
+    'stream',
+    'object',
+    'thread',
+    'concurrent',
+    'jvm',
+    'collection',
+    'reflection',
+    'serializable',
+    'spring',
+    'HashMap',
+    'computer'
 ]

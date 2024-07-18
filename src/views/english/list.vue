@@ -6,6 +6,9 @@
       v-model="query"
       @keydown.enter.native="fetchData"
     >
+      <el-button slot="prepend" type="primary" @click="toAdd"
+        >Add Word</el-button
+      >
       <el-button
         type="primary"
         slot="append"
@@ -13,7 +16,6 @@
         @click="fetchData"
       ></el-button>
     </el-input>
-    <el-button type="primary" @click="toAdd">Add Word</el-button>
     <el-card class="box-card mt-2" shadow="never">
       <el-table
         v-loading="loading"
@@ -99,7 +101,7 @@ export default {
     },
     onEdit(data) {
       if ({ ...data }.id) {
-        this.$router.push(`/edit/${data.id}`);
+        this.$router.push(`/editWord/${data.id}`);
       }
     },
     onDel(data) {
@@ -129,28 +131,20 @@ export default {
       this.currentPage = page;
       this.fetchData();
     },
-    fetchData() {
+    async fetchData() {
       this.loading = true;
       const _this = this;
-      wordApi
-        .getWordPage({
+      const [err, res] = await wordApi.getWordPage({
           query: _this.query,
           pageNum: this.currentPage,
           pageSize: PAGE_SIZE.DEFAULT,
         })
-        .then((res) => {
-          const {
-            data: { list, total },
-          } = { data: {}, ...res };
+        _this.loading = false;
+        if(!err) {
+          const { list, total } = { ...res };
           _this.tableData = [...(list || [])];
           _this.total = total || 0;
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          _this.loading = false;
-        });
+        }
     },
   },
   mounted() {
