@@ -99,24 +99,20 @@ export default {
     toggleShowAnswer() {
       this.showAnswer = !this.showAnswer;
     },
-    onSubmit() {
+    async onSubmit() {
       // 提交答案和评分
       const _this = this;
       if (_this.rating <= 0) {
         return _this.msgError("请选择自评分数！");
       }
       _this.loading = true;
-      submitAnswer({ rating: this.rating, questionId: _this.question.id })
-        .then((res) => {
-          console.log(res, "111111111111");
-        })
-        .catch((err) => {
-          console.log(err, "2222222222222");
-        })
-        .finally(() => {
-          _this.loading = false;
-          console.log("3333333333333333333");
-        });
+      const [err, res] = await submitAnswer({ rating: this.rating, questionId: _this.question.id });
+      _this.loading = false;
+      if(!err && res && res == 'success') {
+        _this.msgSuccess("答案提交成功！")
+      } else {
+        this.msgError("操作失败！");
+      }
     },
     toggleProblem(id) {
       this.$router.push(`/question/${id}`);

@@ -29,18 +29,39 @@
       <div id="calendar" style="height: 120px"></div>
     </el-card>
     <el-card class="mb-4">
-      <el-progress
+      <!-- <el-progress
         type="circle"
         stroke-width="12"
         width="200"
         :percentage="12.33"
-      ></el-progress>
+      ></el-progress> -->
       <p class="mt-0 mb-4 fs-1">Submission History</p>
-      <p>123456</p>
-      <p>123456</p>
-      <p>123456</p>
-      <p>123456</p>
-      <p>123456</p>
+      <el-table :data="tableData" class="w-100 mb-4">
+        <el-table-column prop="id" label="ID" width="100"> </el-table-column>
+        <el-table-column prop="questionName" label="问题"> </el-table-column>
+        <el-table-column prop="rating" label="得分" width="180">
+          <template slot-scope="scope">
+            <el-rate
+              :value="scope.row.rating"
+              disabled
+              show-score
+              text-color="#ff9900"
+            ></el-rate>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="答题时间" width="180">
+        </el-table-column>
+      </el-table>
+
+      <el-pagination
+        background
+        layout="total, prev, pager, next"
+        :total="total"
+        :page-size="1"
+        @current-change="onPage"
+        :current-page="currentPage"
+      >
+      </el-pagination>
     </el-card>
   </div>
 </template>
@@ -50,7 +71,8 @@
   <script>
 import { mapState } from "vuex";
 import * as echarts from "echarts";
-import { LAYOUTS } from "@/constants";
+import { LAYOUTS, PAGE_SIZE } from "@/constants";
+import { getAnsewerHistoryPage } from "@/apis/account";
 
 export default {
   name: "user-center",
@@ -62,6 +84,8 @@ export default {
       query: "",
       tableData: [],
       correctRate: 63.25,
+      total: 0,
+      currentPage: 1,
     };
   },
   computed: {
@@ -73,6 +97,10 @@ export default {
     },
   },
   methods: {
+    onPage(page) {
+      this.currentPage = parseInt(page);
+      this.getAnswerHistory();
+    },
     renderChart() {
       var chartDom = document.getElementById("chart");
       var myChart = echarts.init(chartDom);
@@ -232,8 +260,23 @@ export default {
 
       option && myChart.setOption(option);
     },
+    async getAnswerHistory() {
+      this.loading = true;
+      const _this = this;
+      const [err, res] = await getAnsewerHistoryPage({
+        pageNum: this.currentPage,
+        pageSize: PAGE_SIZE.DEFAULT,
+      });
+      _this.loading = false;
+      if (!err) {
+        const { list, total } = { ...res };
+        _this.tableData = [...(list || [])];
+        _this.total = total || 0;
+      }
+    },
     fetchData() {
       this.loading = true;
+      this.getAnswerHistory();
       // const _this = this;
     },
   },
